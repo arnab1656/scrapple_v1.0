@@ -1,6 +1,6 @@
 import { DOMAnalyzerEngine } from "./DomAnalyzerEngine";
 
-interface ExtractedDataType {
+export interface ExtractedDataType {
   author: string | null;
   content: string | null;
   email: Array<string> | null;
