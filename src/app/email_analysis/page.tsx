@@ -1,6 +1,6 @@
 "use client";
 
-import DataGridDemo from "@/components/MUI_comp/dataGrid";
+import DataGridDemo from "@/components/MUI_Data_grid_comp/dataGrid";
 import { ExtractedDataType } from "@/services/engine/DOMFetcherService";
 import { useEffect, useState } from "react";
 
