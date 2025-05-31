@@ -1,6 +1,7 @@
 import { DOMAnalyzerEngine } from "./DomAnalyzerEngine";
 
 export interface ExtractedDataType {
+  id: number;
   author: string | null;
   content: string | null;
   email: Array<string> | null;
@@ -140,6 +141,7 @@ export class DOMFetcherService extends DOMAnalyzerEngine {
   }
 
   public masterExtractor(): Array<ExtractedDataType> {
+    let id = 0;
     for (const post of this.allPostELements as Array<HTMLElement>) {
       const author = this.extractPostAuthorNameData(post);
       const content = this.extractPostContentData(post);
@@ -147,7 +149,10 @@ export class DOMFetcherService extends DOMAnalyzerEngine {
       const phoneNumber = this.extractPostPhoneNumberData(post);
       const linkedInURL = this.extractPostLinkedInURLData(post);
 
+      id++;
+
       this.results.push({
+        id,
         author,
         content,
         email,

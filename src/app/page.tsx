@@ -1,13 +1,16 @@
 "use client";
 
-import OutlinedCard from "@/components/MUI_comp/postCard";
+import OutlinedCard from "@/components/postCard";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { DOMFetcherService } from "@/services/engine/DOMFetcherService";
 import { useEffect, useState } from "react";
 import { ExtractedDataType } from "@/services/engine/DOMFetcherService";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   const [DOM, setDOM] = useState<string>("");
 
   const [scrappedData, setScrappedData] = useState<Array<ExtractedDataType>>(
@@ -49,16 +52,17 @@ export default function Home() {
         </div>
         <div className="flex flex-row gap-2">
           <div>
-            <Button
-              className="cursor-pointer"
-              variant="outline"
-              onClick={scrapeIt}
-            >
+            <Button variant={DOM ? "outline" : "disabled"} onClick={scrapeIt}>
               Scrape It
             </Button>
           </div>
           <div>
-            <Button className="cursor-pointer" variant="outline">
+            <Button
+              variant={scrappedData.length > 0 ? "outline" : "disabled"}
+              onClick={() => {
+                router.push("/email_analysis");
+              }}
+            >
               Analyse Emails
             </Button>
           </div>
@@ -67,20 +71,22 @@ export default function Home() {
           <h1 className="text-2xl font-bold">Scraped Organized Data (below)</h1>
         </div>
       </section>
-      <section className="flex flex-col gap-2 mx-[100px] p-10 bg-gray-100">
-        {scrappedData.map((item, key) => {
-          return (
-            <OutlinedCard
-              key={key}
-              postContent={item.content || ""}
-              authorName={item.author || ""}
-              profileURL={item.linkedInURL || ""}
-              email={item.email?.[0] || ""}
-              phone={item.phoneNumber?.[0] || ""}
-            />
-          );
-        })}
-      </section>
+      {scrappedData.length > 0 && (
+        <section className="flex flex-col gap-2 mx-[100px] p-10 bg-gray-100">
+          {scrappedData.map((item, key) => {
+            return (
+              <OutlinedCard
+                key={key}
+                postContent={item.content || ""}
+                authorName={item.author || ""}
+                profileURL={item.linkedInURL || ""}
+                email={item.email?.[0] || ""}
+                phone={item.phoneNumber?.[0] || ""}
+              />
+            );
+          })}
+        </section>
+      )}
     </>
   );
 }
