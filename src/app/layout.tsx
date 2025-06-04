@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import { Work_Sans } from "next/font/google";
+import { SocketProvider } from "@/provider/socketClient";
 
 const workSans = Work_Sans({
   subsets: ["latin"],
@@ -21,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${workSans.variable} antialiased`}>{children}</body>
+      <SocketProvider>
+        <body className={`${workSans.variable} antialiased`}>{children}</body>
+      </SocketProvider>
     </html>
   );
 }
