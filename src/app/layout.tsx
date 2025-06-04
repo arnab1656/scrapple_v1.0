@@ -10,7 +10,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Scrapple",
+  title: "Scrapd_Ine",
   description: "Semi Automated Linkedin Scraping",
 };
 

@@ -11,7 +11,7 @@ export interface ExtractedDataType {
 
 export class DOMFetcherService extends DOMAnalyzerEngine {
   private allPostELements: Array<HTMLElement> | null = [];
-  private results: Array<ExtractedDataType> = [];
+  private scrapedResults: Array<ExtractedDataType> = [];
 
   constructor(DOM: string) {
     super(DOM);
@@ -140,6 +140,33 @@ export class DOMFetcherService extends DOMAnalyzerEngine {
     return scrappedData;
   }
 
+  private removeDuplicateResults(
+    scrapedResults: Array<ExtractedDataType>
+  ): Array<ExtractedDataType> {
+    const uniqueResults: Array<ExtractedDataType> = [];
+    const seenObjects = new Set<string>();
+
+    scrapedResults.forEach((result) => {
+      const objString = JSON.stringify({
+        author: result.author,
+        content: result.content,
+        email: result.email?.sort(),
+        phoneNumber: result.phoneNumber?.sort(),
+        linkedInURL: result.linkedInURL,
+      });
+
+      if (!seenObjects.has(objString)) {
+        seenObjects.add(objString);
+        uniqueResults.push(result);
+      }
+    });
+
+    return uniqueResults.map((item, index) => ({
+      ...item,
+      id: index + 1,
+    }));
+  }
+
   public masterExtractor(): Array<ExtractedDataType> {
     let id = 0;
     for (const post of this.allPostELements as Array<HTMLElement>) {
@@ -151,7 +178,7 @@ export class DOMFetcherService extends DOMAnalyzerEngine {
 
       id++;
 
-      this.results.push({
+      this.scrapedResults.push({
         id,
         author,
         content,
@@ -161,6 +188,6 @@ export class DOMFetcherService extends DOMAnalyzerEngine {
       });
     }
 
-    return this.results;
+    return this.removeDuplicateResults(this.scrapedResults);
   }
 }
