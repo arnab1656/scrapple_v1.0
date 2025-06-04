@@ -2,11 +2,14 @@
 
 import DataGridDemo from "@/components/MUI_Data_grid_comp/dataGrid";
 import { Button } from "@/components/ui/button";
-import { ChunkingService } from "@/services/chunking/ChunkingService";
+import chunkDataPayloadHandler from "@/lib/actions/chunkDataPayload";
+import { useSocket } from "@/provider/socketClient";
 import { ExtractedDataType } from "@/services/engine/DOMFetcherService";
 import { useEffect, useState } from "react";
 
 export default function EmailAnalysisPage() {
+  const socket = useSocket();
+
   const [scrappedData, setScrappedData] = useState<Array<ExtractedDataType>>(
     []
   );
@@ -20,13 +23,8 @@ export default function EmailAnalysisPage() {
     }
   }, []);
 
-  const handleEmailAutomation = async () => {
-    const chunkingService = new ChunkingService<ExtractedDataType>({
-      maxBatchSizeInMB: 4.5,
-    });
-
-    const chunkedData = chunkingService.createBatches(scrappedData);
-    console.log("chunkedData --->", chunkedData);
+  const handleEmailAutomation = () => {
+    socket?.emit("chunkedData-incoming", chunkDataPayloadHandler(scrappedData));
   };
 
   return (

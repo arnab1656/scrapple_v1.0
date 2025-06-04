@@ -1,7 +1,7 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Box from "@mui/material/Box";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { ExtractedDataType } from "@/services/engine/DOMFetcherService";
 import {
   Dialog,
@@ -96,15 +96,39 @@ export default function DataGridDemo({
   const [selectedRow, setSelectedRow] = useState<ExtractedDataType | null>(
     null
   );
+  const [isMounted, setIsMounted] = useState(false);
 
-  const rows = scrappedData.map((item) => ({
-    id: item.id,
-    author: item.author,
-    content: item.content,
-    email: item.email,
-    phoneNumber: item.phoneNumber,
-    linkedInURL: item.linkedInURL,
-  }));
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  const handleRowClick = useCallback(
+    (params: GridRowParams) => {
+      if (isMounted) {
+        setSelectedRow(params.row as ExtractedDataType);
+        setIsDialogOpen(true);
+      }
+    },
+    [isMounted]
+  );
+
+  const rows = React.useMemo(
+    () =>
+      scrappedData.map((item) => ({
+        id: item.id,
+        author: item.author,
+        content: item.content,
+        email: item.email,
+        phoneNumber: item.phoneNumber,
+        linkedInURL: item.linkedInURL,
+      })),
+    [scrappedData]
+  );
+
+  if (!isMounted) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -126,9 +150,11 @@ export default function DataGridDemo({
             const contentLines = Math.ceil(content.length / 40);
             return Math.max(150, contentLines * 24);
           }}
-          onRowClick={(params) => {
-            setSelectedRow(params.row as ExtractedDataType);
-            setIsDialogOpen(true);
+          onRowClick={handleRowClick}
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 5 },
+            },
           }}
           sx={{
             "& .MuiDataGrid-cell": {
@@ -158,11 +184,13 @@ export default function DataGridDemo({
           disableRowSelectionOnClick
         />
       </Box>
-      <DialogForRowData
-        isDialogOpen={isDialogOpen}
-        setIsDialogOpen={setIsDialogOpen}
-        selectedRow={selectedRow}
-      />
+      {isMounted && (
+        <DialogForRowData
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          selectedRow={selectedRow}
+        />
+      )}
     </>
   );
 }
@@ -238,3 +266,5 @@ const DialogForRowData = ({
     </Dialog>
   );
 };
+
+// TODO: ENHANCEMENT of the Loader component in the DataGrid component
