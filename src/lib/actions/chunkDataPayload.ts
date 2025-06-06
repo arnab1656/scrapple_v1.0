@@ -3,7 +3,7 @@ import { ExtractedDataType } from "@/services/engine/DOMFetcherService";
 
 const chunkDataPayloadHandler = (scrappedData: Array<ExtractedDataType>) => {
   const chunkingService = new ChunkingService<ExtractedDataType>({
-    maxBatchSizeInMB: 4.5,
+    maxBatchSizeInMB: 0.95,
   });
 
   const chunkedData = chunkingService.createBatches(scrappedData);

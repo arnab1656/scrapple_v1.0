@@ -153,7 +153,7 @@ export default function DataGridDemo({
           onRowClick={handleRowClick}
           initialState={{
             pagination: {
-              paginationModel: { pageSize: 5 },
+              paginationModel: { pageSize: 100 },
             },
           }}
           sx={{

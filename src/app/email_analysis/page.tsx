@@ -2,13 +2,13 @@
 
 import DataGridDemo from "@/components/MUI_Data_grid_comp/dataGrid";
 import { Button } from "@/components/ui/button";
+import { useChunkQueue } from "@/hook/useChunkQueue";
 import chunkDataPayloadHandler from "@/lib/actions/chunkDataPayload";
-import { useSocket } from "@/provider/socketClient";
 import { ExtractedDataType } from "@/services/engine/DOMFetcherService";
 import { useEffect, useState } from "react";
 
 export default function EmailAnalysisPage() {
-  const socket = useSocket();
+  const { startProcessing } = useChunkQueue();
 
   const [scrappedData, setScrappedData] = useState<Array<ExtractedDataType>>(
     []
@@ -24,7 +24,8 @@ export default function EmailAnalysisPage() {
   }, []);
 
   const handleEmailAutomation = () => {
-    socket?.emit("chunkedData-incoming", chunkDataPayloadHandler(scrappedData));
+    const batchResult = chunkDataPayloadHandler(scrappedData);
+    startProcessing(batchResult.chunkedData);
   };
 
   return (

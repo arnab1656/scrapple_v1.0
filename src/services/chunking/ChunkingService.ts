@@ -3,7 +3,7 @@ export interface ChunkConfig {
 }
 
 export interface ChunkInfo<T> {
-  data: T[];
+  chunk: T[];
   sizeInMB: number;
 }
 
@@ -75,7 +75,7 @@ export class ChunkingService<T> {
           currentChunkData.length > 0
         ) {
           chunks.push({
-            data: currentChunkData,
+            chunk: currentChunkData,
             sizeInMB: currentChunkSize,
           });
           totalBatchSize += currentChunkSize;
@@ -90,7 +90,7 @@ export class ChunkingService<T> {
 
       if (currentChunkData.length > 0) {
         chunks.push({
-          data: currentChunkData,
+          chunk: currentChunkData,
           sizeInMB: currentChunkSize,
         });
         totalBatchSize += currentChunkSize;
