@@ -83,15 +83,17 @@ class ChunkQueueManager {
       throw new Error("Queue must be idle or paused to start");
     }
 
-    if (this.isTestMode) {
-      setTimeout(() => {
-        this.state.status = "processing";
-        this.state.processingStartTime = Date.now();
+    //_This is for testing purposes AND todo: REMOVE IT IN SEPERATE mODULE
 
-        this.processNextChunk();
-      }, 500);
-      return;
-    }
+    // if (this.isTestMode) {
+    //   setTimeout(() => {
+    //     this.state.status = "processing";
+    //     this.state.processingStartTime = Date.now();
+
+    //     this.processNextChunk();
+    //   }, 500);
+    //   return;
+    // }
 
     this.socket.emit("queue:decode:start", {
       totalChunks: this.state.totalChunks,
@@ -127,21 +129,23 @@ class ChunkQueueManager {
 
     const currentChunk = this.chunks[currentIndex];
 
-    if (this.isTestMode) {
-      //_The success rate is 90%
-      setTimeout(() => {
-        const shouldSucceed = Math.random() > 0.1;
-        if (shouldSucceed) {
-          this.handleChunkAck(currentIndex);
-        } else {
-          this.handleChunkError(
-            currentIndex,
-            new Error("Simulated random error")
-          );
-        }
-      }, 1000);
-      return;
-    }
+    //_This is for testing purposes AND todo: REMOVE IT IN SEPERATE mODULE
+
+    // if (this.isTestMode) {
+    //   //_The success rate is 90%
+    //   setTimeout(() => {
+    //     const shouldSucceed = Math.random() > 0.1;
+    //     if (shouldSucceed) {
+    //       this.handleChunkAck(currentIndex);
+    //     } else {
+    //       this.handleChunkError(
+    //         currentIndex,
+    //         new Error("Simulated random error")
+    //       );
+    //     }
+    //   }, 1000);
+    //   return;
+    // }
 
     this.socket.emit("chunk:data", {
       chunkIndex: currentIndex,
@@ -198,14 +202,16 @@ class ChunkQueueManager {
       },
     });
 
-    if (this.isTestMode) {
-      setTimeout(() => {
-        this.state.status = "completed";
-        this.clearTimeout();
-        this.config.onComplete?.();
-      }, 500);
-      return;
-    }
+    //_This is for testing purposes AND todo: REMOVE IT IN SEPERATE mODULE
+
+    // if (this.isTestMode) {
+    //   setTimeout(() => {
+    //     this.state.status = "completed";
+    //     this.clearTimeout();
+    //     this.config.onComplete?.();
+    //   }, 500);
+    //   return;
+    // }
 
     this.setCompletionTimeout();
 
@@ -303,13 +309,6 @@ class ChunkQueueManager {
 
     this.socket.on("chunk:ack", ({ chunkIndex }) => {
       this.handleChunkAck(chunkIndex);
-    });
-
-    this.socket.on("chunk:data:complete:ack", () => {
-      this.clearTimeout();
-
-      this.state.status = "completed";
-      this.config.onComplete?.();
     });
 
     this.socket.on("chunk:error", ({ chunkIndex, error }) => {
