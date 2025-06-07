@@ -126,7 +126,7 @@ class ChunkQueueManager {
     this.processNextChunk();
   }
 
-  private handleChunkError(chunkIndex: number, error: Error): void {
+  private handleChunkError(chunkIndex: number): void {
     const attempts = (this.retryAttempts[chunkIndex] || 0) + 1;
     this.retryAttempts[chunkIndex] = attempts;
 
@@ -138,7 +138,7 @@ class ChunkQueueManager {
         }
       }, this.config.retryDelayMs);
     } else {
-      this.emitFatalError(chunkIndex, error);
+      this.emitFatalError();
     }
   }
 
@@ -158,8 +158,7 @@ class ChunkQueueManager {
 
     this.setCompletionTimeout();
 
-    this.socket.on("chunk:data:complete:ack", () => {
-      console.log("chunk:data:complete:ack done");
+    this.socket.once("chunk:data:complete:ack", () => {
       this.clearTimeout();
 
       this.state.status = "completed";
@@ -168,8 +167,7 @@ class ChunkQueueManager {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private emitFatalError(chunkIndex: number, error: Error): void {
+  private emitFatalError(): void {
     this.socket.emit("chunk:data:fatal", {
       batchId: this.config.batchId,
     });
@@ -177,6 +175,8 @@ class ChunkQueueManager {
     this.state.status = "fatal_error";
 
     this.clearTimeout();
+    this.config.onFailure?.();
+
     this.destroy();
   }
 
@@ -212,7 +212,7 @@ class ChunkQueueManager {
         }
 
         case "redis_chunk_error": {
-          this.handleChunkError(chunkIndex, new Error("redis_chunk_error"));
+          this.handleChunkError(chunkIndex);
           break;
         }
 
@@ -263,7 +263,7 @@ class ChunkQueueManager {
     this.clearTimeout();
 
     this.timeoutHandler = setTimeout(() => {
-      this.handleChunkError(chunkIndex, new Error("redis_chunk_error"));
+      this.handleChunkError(chunkIndex);
     }, this.config.timeoutMs);
   }
 

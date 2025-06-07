@@ -32,6 +32,11 @@ export const useChunkQueue = () => {
         },
         onComplete: () => {
           setProgress((prev) => ({ ...prev, status: "completed" }));
+          console.log("onComplete of the wholeBatch Processing");
+        },
+
+        onFailure: () => {
+          console.log("onFailure of the wholeBatch Processing");
         },
       });
 
