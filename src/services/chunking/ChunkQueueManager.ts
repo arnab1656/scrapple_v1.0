@@ -159,6 +159,7 @@ class ChunkQueueManager {
     this.setCompletionTimeout();
 
     this.socket.on("chunk:data:complete:ack", () => {
+      console.log("chunk:data:complete:ack done");
       this.clearTimeout();
 
       this.state.status = "completed";

@@ -33,13 +33,6 @@ export const useChunkQueue = () => {
         onComplete: () => {
           setProgress((prev) => ({ ...prev, status: "completed" }));
         },
-        onBatchFailure: (error) => {
-          setProgress((prev) => ({ ...prev, status: "error" }));
-          console.error(
-            "Chunk processing failed and Process has been stopped",
-            error
-          );
-        },
       });
 
       setQueueManager(manager);
